@@ -1,0 +1,120 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+//---
+#spCommandBar,
+#spSiteHeader,
+#spLeftNav,
+.CommandBarWrapper,
+.sp-appBar,
+#CommentsWrapper {
+  display: none !important;
+}
+.CanvasZone {
+  padding: 0 !important;
+
+}
+
+.ControlZone {
+  margin-top: 0 !important;
+  padding: 0 !important;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+#workbenchPageContent {
+  max-width: 100% !important;
+}
+
+#workbenchPageContent>div>div>div {
+  padding: 0 !important;
+}
+//---
+
+.pcm {
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+}
+
+.pcm-container {
+  display: flex;
+  height: 500px;
+  background: linear-gradient(to right, #b1ccf0, #ffffff);
+  overflow: hidden;
+}
+
+/* LEFT SIDE */
+
+.pcm-left {
+  width: 50%;
+  padding: 40px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.pcm-title {
+  font-family: "Segoe UI";
+  font-size: 28px;
+  font-weight: 700;
+  color: #000000;
+
+  margin-bottom: 25px;
+  // letter-spacing: 0.5px;
+}
+
+/* GRID */
+
+.pcm-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  width: 320px;
+}
+
+/* TILE */
+
+.pcm-tile {
+  width: 100%;
+  height: 50px;
+
+  background-color: #5b8fdc;
+  color: white;
+
+  border: 1px solid black;
+  border-radius: 6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  transition: 0.3s;
+}
+
+.pcm-tile:hover {
+  background-color: #0b71ff;
+  transform: scale(1.05);
+}
+
+/* RIGHT IMAGE */
+
+.pcm-right {
+  width: 50%;
+  background-image: url('../../../assets/SideImage.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+}

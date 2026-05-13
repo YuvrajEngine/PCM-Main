@@ -1,0 +1,19 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "useGulp": false,
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "22.22.1",
+    "sdksVersions": {},
+    "version": "1.22.2",
+    "libraryName": "pcm",
+    "libraryId": "2a963107-0826-4030-a806-dd2038fe9640",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "PCM",
+    "solutionShortDescription": "PCM description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

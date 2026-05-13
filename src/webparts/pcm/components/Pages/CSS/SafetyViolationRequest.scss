@@ -1,0 +1,341 @@
+/* ─────────────────────────────────────────────
+   SAFETY VIOLATION FORM THEME
+───────────────────────────────────────────── */
+
+.svc-container {
+  background: #f0f0f0;
+  min-height: 100vh;
+  padding: 14px;
+  font-family: Arial, sans-serif;
+}
+
+/* ───────────────── Header ───────────────── */
+
+.svc-header {
+  background: #b71c1c;
+  padding: 11px 16px;
+  border-radius: 4px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.svc-title {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  margin: 0;
+}
+
+/* ───────────────── Sections ───────────────── */
+
+.svc-section {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 14px;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.svc-section-title {
+  margin: 0 0 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #b71c1c;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 8px;
+}
+
+/* ───────────────── Grid Layout ───────────────── */
+
+.svc-row {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.svc-cols-1 {
+  grid-template-columns: 1fr;
+}
+
+.svc-cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.svc-cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.svc-cols-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* ───────────────── Fields ───────────────── */
+
+.svc-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.svc-field label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 5px;
+  min-height: 16px;
+}
+
+.svc-field input,
+.svc-field select,
+.svc-field textarea {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 7px 9px;
+  font-size: 11.5px;
+  background: #fff;
+  color: #333;
+  outline: none;
+  transition: border-color 0.15s ease,
+              box-shadow 0.15s ease;
+  box-sizing: border-box;
+
+  &:focus {
+    border-color: #c62828;
+    box-shadow: 0 0 0 2px rgba(198, 40, 40, 0.08);
+  }
+
+  &::placeholder {
+    color: #aaa;
+  }
+}
+
+/* Input Height Alignment */
+
+.svc-field input,
+.svc-field select {
+  height: 34px;
+}
+
+.svc-field textarea {
+  resize: vertical;
+  min-height: 90px;
+  line-height: 1.5;
+  padding-top: 8px;
+}
+
+/* ───────────────── Violation Details Alignment ───────────────── */
+
+.svc-violation-bottom {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.svc-observation-date {
+  display: flex;
+  flex-direction: column;
+}
+
+.svc-observation-date input {
+  height: 34px;
+}
+
+.svc-violation-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.svc-violation-text textarea {
+  min-height: 50px;
+}
+
+/* ───────────────── Readonly ───────────────── */
+
+.svc-readonly {
+  background: #f5f5f5 !important;
+  color: #888 !important;
+  cursor: not-allowed;
+}
+
+/* ───────────────── File Upload ───────────────── */
+
+.svc-file-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.svc-file-btn {
+  background: #656568;
+  color: #ffffff;
+  padding: 7px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  white-space: nowrap;
+
+  &:hover {
+    background: #4a4a4b;
+    color:#ffffff;
+  }
+}
+
+.svc-file-name {
+  font-size: 11px;
+  color: #777;
+}
+
+/* ───────────────── Hint ───────────────── */
+
+.svc-field-hint {
+  margin-top: 3px;
+  font-size: 10px;
+  color: #888;
+}
+
+/* ───────────────── Agreement ───────────────── */
+
+.svc-agreement {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-left: 3px solid #c62828;
+  border-radius: 4px;
+  padding: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 14px;
+  font-weight: 700;
+  font-size: 11.5px;
+  color: #444;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  input[type="checkbox"] {
+    margin-top: 2px;
+    accent-color: #c62828;
+  }
+
+  label {
+    line-height: 1.5;
+    cursor: pointer;
+  }
+}
+
+/* ───────────────── Buttons ───────────────── */
+
+.svc-actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.svc-actions button {
+  border: none;
+  border-radius: 3px;
+  padding: 7px 14px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+/* Primary */
+
+.btn-primary {
+  background: #c62828;
+  color: #fff;
+
+  &:hover {
+    background: #a61b1b;
+  }
+
+  &:disabled {
+    background: #bdbdbd;
+    cursor: not-allowed;
+  }
+}
+
+/* Secondary */
+
+.btn-secondary {
+  background: #fff;
+  color: #c62828;
+  border: 1px solid #c62828 !important;
+
+  &:hover {
+    background: #ffeaea;
+  }
+}
+
+/* Ghost */
+
+.btn-ghost {
+  background: #757575;
+  color: #fff;
+
+  &:hover {
+    background: #616161;
+  }
+}
+
+/* ───────────────── Scrollbar ───────────────── */
+
+textarea::-webkit-scrollbar {
+  width: 5px;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background: #d0d0d0;
+  border-radius: 10px;
+}
+
+/* ───────────────── Responsive ───────────────── */
+
+@media (max-width: 1024px) {
+  .svc-cols-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .svc-cols-4,
+  .svc-cols-3,
+  .svc-cols-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .svc-violation-bottom {
+    grid-template-columns: 1fr;
+  }
+
+  .svc-actions {
+    justify-content: stretch;
+  }
+
+  .svc-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .svc-container {
+    padding: 10px;
+  }
+
+  .svc-section {
+    padding: 12px;
+  }
+
+  .svc-title {
+    font-size: 12px;
+  }
+}

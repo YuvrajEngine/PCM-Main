@@ -1,0 +1,64 @@
+{
+  "name": "pcm",
+  "version": "0.0.1",
+  "private": true,
+  "engines": {
+    "node": ">=22.14.0 < 23.0.0"
+  },
+  "scripts": {
+    "build": "heft test --clean --production && heft package-solution --production",
+    "start": "heft start --clean",
+    "clean": "heft clean",
+    "eject-webpack": "heft eject-webpack"
+  },
+  "dependencies": {
+    "@fluentui/react": "^8.106.4",
+    "@fortawesome/fontawesome-svg-core": "^1.2.36",
+    "@fortawesome/free-solid-svg-icons": "^5.15.4",
+    "@fortawesome/react-fontawesome": "^0.1.18",
+    "@microsoft/sp-component-base": "1.22.2",
+    "@microsoft/sp-core-library": "1.22.2",
+    "@microsoft/sp-lodash-subset": "1.22.2",
+    "@microsoft/sp-office-ui-fabric-core": "1.22.2",
+    "@microsoft/sp-property-pane": "1.22.2",
+    "@microsoft/sp-webpart-base": "1.22.2",
+    "@pnp/sp": "^2.15.0",
+    "@pnp/spfx-controls-react": "^3.20.0",
+    "formik": "^2.4.9",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
+    "react-router-dom": "^5.3.4",
+    "react-scroll-parallax": "^3.5.0",
+    "sweetalert2": "^11.26.24",
+    "tslib": "2.3.1",
+    "xlsx": "^0.18.5",
+    "yup": "^1.7.1"
+  },
+  "devDependencies": {
+    "@microsoft/eslint-config-spfx": "1.22.2",
+    "@microsoft/eslint-plugin-spfx": "1.22.2",
+    "@microsoft/sp-module-interfaces": "1.22.2",
+    "@microsoft/spfx-heft-plugins": "1.22.2",
+    "@microsoft/spfx-web-build-rig": "1.22.2",
+    "@rushstack/eslint-config": "4.5.2",
+    "@rushstack/heft": "1.1.2",
+    "@types/heft-jest": "1.0.2",
+    "@types/react": "17.0.45",
+    "@types/react-dom": "17.0.17",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/webpack-env": "~1.15.2",
+    "@typescript-eslint/parser": "8.46.2",
+    "css-loader": "~7.1.2",
+    "eslint": "8.57.1",
+    "eslint-plugin-react-hooks": "4.3.0",
+    "typescript": "~5.8.0"
+  },
+  "overrides": {
+    "@rushstack/heft": "1.1.2"
+  },
+  "resolutions": {
+    "@types/react": "17.0.45"
+  }
+}

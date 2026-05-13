@@ -1,0 +1,305 @@
+// ─── Dashboard Shell ───────────────────────────────────────────
+.dashboard {
+  background: #f0f0f0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+// ─── Header Bar ────────────────────────────────────────────────
+.dash-header {
+  background: #b71c1c;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .dash-title {
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+  }
+
+  .dash-separator {
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 13px;
+  }
+
+  .dash-breadcrumb {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 11px;
+    margin-left: auto;
+  }
+}
+
+// ─── Container ─────────────────────────────────────────────────
+.container {
+  padding: 14px;
+}
+
+// ─── Action Bar ────────────────────────────────────────────────
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  background: #fff;
+  padding: 10px 12px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.btn-group {
+  display: flex;
+  gap: 4px;
+}
+
+.action-divider {
+  width: 1px;
+  height: 24px;
+  background: #e0e0e0;
+  margin: 0 4px;
+}
+
+.right-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+// ─── Buttons ───────────────────────────────────────────────────
+.btn {
+  background: #c62828;
+  color: #fff;
+  border: none;
+  padding: 6px 11px;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.15s ease;
+
+  svg, i { font-size: 12px; }
+
+  &:hover  { background: #a61b1b; }
+  &:active { background: #8e1515; }
+}
+
+.btn-outline {
+  background: #fff;
+  color: #c62828;
+  border: 1px solid #c62828;
+  padding: 5px 11px;
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.15s ease;
+
+  svg, i { font-size: 12px; }
+
+  &:hover  { background: #ffeaea; }
+  &:active { background: #fdd9d9; }
+}
+//------------
+.violation-link {
+  color: #c62828;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: underline;
+
+  &:hover {
+    color: #8e0000;
+  }
+}
+// ─── Search ────────────────────────────────────────────────────
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .search-icon {
+    position: absolute;
+    left: 8px;
+    color: #aaa;
+    font-size: 11px;
+    pointer-events: none;
+  }
+
+  .search {
+    padding: 6px 8px 6px 26px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 11.5px;
+    width: 150px;
+    outline: none;
+    transition: border-color 0.15s ease;
+
+    &:focus { border-color: #c62828; }
+
+    &::placeholder { color: #bbb; }
+  }
+}
+
+// ─── Table Panel ───────────────────────────────────────────────
+.table-wrapper {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow-x: auto;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+}
+
+// ─── Table ─────────────────────────────────────────────────────
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+  height: 40px;
+
+  // Header
+  thead tr {
+    background: #c62828;
+  }
+
+  th {
+    color: #fff;
+    padding: 9px 10px;
+    border: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    text-align: left;
+    white-space: nowrap;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.3px;
+
+    &:last-child { border-right: none; }
+  }
+
+  // Body
+  td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333;
+    vertical-align: middle;
+  }
+
+  tbody {
+    tr {
+      transition: background 0.1s ease;
+
+      &:hover   { background: #fff8f8; }
+      &:last-child td { border-bottom: none; }
+    }
+  }
+}
+//Repoer---------------------------
+
+.report-dropdown {
+  position: relative;
+}
+
+.report-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+
+  &:hover .report-dropdown-menu {
+    display: flex;
+  }
+}
+
+.report-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.report-dropdown-menu {
+  display: none;
+
+  position: absolute;
+  right: 0;
+
+  min-width: 200px;
+
+  background: #fff;
+  border-radius: 8px;
+
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+
+  z-index: 999;
+
+  padding: 10px;
+
+  flex-direction: column;
+}
+
+.report-dropdown-item {
+  border: none;
+  background: transparent;
+
+  text-align: left;
+  cursor: pointer;
+
+  font-size: 14px;
+  padding: 8px 12px;
+
+  transition: all 0.2s ease;
+
+  width: fit-content;
+
+  &:hover {
+    background: #f5f5f5;
+    border-radius: 6px;
+  }
+
+  // ⭐ LADDER EFFECT
+  &:nth-child(even) {
+    margin-left: 30px;
+  }
+}
+
+// ─── Status Badges ─────────────────────────────────────────────
+.status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &-open    { background: #fff3e0; color: #e65100; }
+  &-closed  { background: #e8f5e9; color: #2e7d32; }
+  &-pending { background: #e3f2fd; color: #1565c0; }
+}
+
+// ─── Severity Colors ───────────────────────────────────────────
+.sev-high   { color: #c62828; font-weight: 600; }
+.sev-medium { color: #f57f17; font-weight: 600; }
+.sev-low    { color: #2e7d32; font-weight: 600; }
+
+// ─── Empty / Loading State ─────────────────────────────────────
+.no-data {
+  text-align: center;
+  padding: 30px 20px;
+  color: #aaa;
+  font-size: 12px;
+}
+
+.no-data-error {
+  text-align: center;
+  padding: 30px 20px;
+  color: #c62828;
+  font-size: 12px;
+  font-weight: 500;
+}
