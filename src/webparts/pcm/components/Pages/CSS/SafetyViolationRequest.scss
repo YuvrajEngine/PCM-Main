@@ -166,30 +166,54 @@
 .svc-file-wrapper {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
+  padding: 6px 0;
 }
 
+/* Upload Button */
 .svc-file-btn {
-  background: #656568;
-  color: #ffffff;
-  padding: 7px 12px;
-  font-size: 11px;
+  background: #72a3ff;
+  color: #fff;
+  padding: 8px 14px;
+  font-size: 12px;
   font-weight: 600;
-  border-radius: 3px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
   white-space: nowrap;
 
   &:hover {
-    background: #4a4a4b;
-    color:#ffffff;
+    background: #5d93f7;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0px);
   }
 }
 
+/* File info text */
 .svc-file-name {
-  font-size: 11px;
-  color: #777;
+  font-size: 12px;
+  color: #000000;
+  background: #b8c9df;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Optional: make it feel disabled when no file */
+.svc-file-name:empty {
+  display: none;
 }
 
 /* ───────────────── Hint ───────────────── */

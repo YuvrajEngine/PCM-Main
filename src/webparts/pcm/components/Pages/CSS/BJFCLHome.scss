@@ -11,27 +11,61 @@
   padding: 10px 16px;
   display: flex;
   align-items: center;
-  gap: 10px;
-
-  .dash-title {
-    color: #fff;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.4px;
-  }
-
-  .dash-separator {
-    color: rgba(255, 255, 255, 0.45);
-    font-size: 13px;
-  }
-
-  .dash-breadcrumb {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 11px;
-    margin-left: auto;
-  }
+  justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
+// Left Section
+.dash-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dash-logo {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.dash-title {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+// Right Section
+.dash-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.dash-breadcrumb {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.dash-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgb(255, 255, 255);
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: #000000;
+  font-size: 12px;
+  font-weight: 700;
+
+  i {
+    font-size: 16px;
+  }
+}
 // ─── Container ─────────────────────────────────────────────────
 .container {
   padding: 14px;

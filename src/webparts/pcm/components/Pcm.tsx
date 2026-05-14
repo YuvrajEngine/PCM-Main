@@ -14,6 +14,7 @@ import Bjfcl from "./Pages/BJFCL";
 import SafetyViolationDetails from "./Pages/SafetyViolationRequest";
 import SeverityViolationReport from "./Pages/SeverityViolationReport";
 import SafetyViolationRequestEdit from "./Pages/SafetyViolationRequestEdit";
+import SafetyViolationPdf from "./Pages/SafetyViolationPdf";
 
 /* ================= HOME PAGE ================= */
 const Home: React.FC<IPcmProps> = (props: IPcmProps) => {
@@ -100,6 +101,7 @@ export default class Pcm extends React.Component<IPcmProps> {
                   <Route path="/SeverityViolationReport" render={() => <SeverityViolationReport {...this.props} />}/>
                   <Route path="/SafetyViolationRequestEdit" render={() => (<SafetyViolationRequestEdit {...this.props} />)}/>
                   <Route path="/SeverityViolationReport" render={() => (<SeverityViolationReport {...this.props} />)}/>
+                  <Route path="/SafetyViolationPdf" render={() => (<SafetyViolationPdf {...this.props} />)}/>
                 </Switch>
               </div>
             </div>

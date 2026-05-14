@@ -69,25 +69,17 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
     agreed: false,
   });
 
-  useEffect(() => {
-    loadEventTypes();
-    loadSeverityMatrix();
-    loadLoggedInEmployee();
-    loadContractorAgencies();
-    loadTransporterAgencies();
-  }, []);
-
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     const { id, value, type } = e.target;
 
     // Contractor
     if (id === "contractorAgency") {
       const selectedAgency = contractorAgencies.find(
-        (x: any) => x.ContractorAgency === value
+        (x: any) => x.ContractorAgency === value,
       );
 
       setFormData((prev) => ({
@@ -106,7 +98,7 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
     // Transporter
     if (id === "transporterAgency") {
       const selectedTransporter = transporterAgencies.find(
-        (x: any) => x.TransporterName === value
+        (x: any) => x.TransporterName === value,
       );
 
       setFormData((prev) => ({
@@ -127,9 +119,7 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
       ...prev,
 
       [id]:
-        type === "checkbox"
-          ? (e.target as HTMLInputElement).checked
-          : value,
+        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     }));
   };
 
@@ -154,7 +144,7 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
           isAscending: false,
         },
         1,
-        props
+        props,
       );
 
       let nextNumber = 1;
@@ -174,65 +164,57 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
   // ===============================
   // Validation
   // ===============================
-  const validateForm = () => {
+  const validateForm = async () => {
     if (!formData.typeOfViolation) {
-      Swal.fire(
+      await Swal.fire(
         "Validation",
         "Please select Type Of Violation",
-        "warning"
+        "warning",
       );
 
       return false;
     }
 
     if (!formData.severity) {
-      Swal.fire("Validation", "Please select Severity", "warning");
+      await Swal.fire("Validation", "Please select Severity", "warning");
 
       return false;
     }
 
     if (!formData.eventType) {
-      Swal.fire("Validation", "Please select Event Type", "warning");
+      await Swal.fire("Validation", "Please select Event Type", "warning");
 
       return false;
     }
 
     if (!formData.observationDate) {
-      Swal.fire(
+      await Swal.fire(
         "Validation",
         "Please select Observation Date",
-        "warning"
+        "warning",
       );
 
       return false;
     }
 
     if (!formData.violationDetails) {
-      Swal.fire(
+      await Swal.fire(
         "Validation",
         "Please enter Violation Details",
-        "warning"
+        "warning",
       );
 
       return false;
     }
 
     if (!formData.employmentType) {
-      Swal.fire(
-        "Validation",
-        "Please select Employment Type",
-        "warning"
-      );
+      await Swal.fire("Validation", "Please select Employment Type", "warning");
 
       return false;
     }
 
     if (!formData.agreed) {
-      Swal.fire(
-        "Validation",
-        "Please accept declaration",
-        "warning"
-      );
+      await Swal.fire("Validation", "Please accept declaration", "warning");
 
       return false;
     }
@@ -252,7 +234,7 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
       const requestNo = await generateRequestNumber();
 
       const selectedEvent = eventTypes.find(
-        (x: any) => x.Title === formData.eventType
+        (x: any) => x.Title === formData.eventType,
       );
 
       const payload: any = {
@@ -261,13 +243,15 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
         RequestDate: new Date(),
         TypeOfViolation: formData.typeOfViolation,
         SeverityOfViolation: formData.severity,
-        ViolationWithRespectedTo:formData.violationWithRespectTo,
+        ViolationWithRespectedTo: formData.violationWithRespectTo,
         ViolationDetails: formData.violationDetails,
         ObserverName: formData.observerName,
         ObserverDepartment: formData.observerDepartment,
         ObserverPosition: formData.observerPosition,
         Evidence: formData.evidence,
-        ObservationDate: formData.observationDate? new Date(formData.observationDate).toISOString() : null,
+        ObservationDate: formData.observationDate
+          ? new Date(formData.observationDate).toISOString()
+          : null,
         EmployementType: formData.employmentType,
         NameOfViolator: formData.violatorName,
         EmpNoOrGatePass: formData.empNo,
@@ -275,8 +259,10 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
         ViolatorPosition: formData.violatorPosition,
         ContractorAgency: formData.contractorAgency,
         TransporterAgency: formData.transporterAgency,
-        VendorCode: formData.contractorVendorCode || formData.transporterVendorCode,
-        VendorEmail: formData.contractorVendorEmail || formData.transporterVendorEmail,
+        VendorCode:
+          formData.contractorVendorCode || formData.transporterVendorCode,
+        VendorEmail:
+          formData.contractorVendorEmail || formData.transporterVendorEmail,
         PenaltyAmount: formData.penaltyAmount,
         RemarksForWarning: formData.remarks,
         Status: status,
@@ -290,7 +276,7 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
       const response = await spCrud.insertData(
         "SafetyViolationDetails",
         payload,
-        props
+        props,
       );
 
       const itemId = response?.data?.Id;
@@ -304,7 +290,7 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
             "SafetyViolationDetails",
             itemId,
             attachments[i],
-            props
+            props,
           );
         }
       }
@@ -332,7 +318,7 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
     } catch (error) {
       console.error("Error Saving Data:", error);
 
-      Swal.fire({
+      await Swal.fire({
         icon: "error",
 
         title: "Error",
@@ -391,7 +377,8 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
       confirmButtonColor: "#f39c12",
     });
 
-    //if (!confirm.isConfirmed) return;
+    // IMPORTANT
+    if (!confirm.isConfirmed) return;
 
     await saveData("Draft");
   };
@@ -404,7 +391,7 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
       const data = await eventMasterOps.getSafetyViolationEventMasterData(
         "",
         "Title asc",
-        props
+        props,
       );
 
       setEventTypes(data);
@@ -421,12 +408,12 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
       const data = await severityMatrixOps.getSeverityMatrixData(
         "",
         "Title asc",
-        props
+        props,
       );
 
       const uniqueData = data.filter(
         (item: any, index: number, self: any[]) =>
-          index === self.findIndex((t) => t.Title === item.Title)
+          index === self.findIndex((t) => t.Title === item.Title),
       );
 
       setSeverityList(uniqueData);
@@ -440,15 +427,14 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
   // ===============================
   const loadLoggedInEmployee = async () => {
     try {
-      const userEmail =
-        props.currentSPContext.pageContext.user.email;
+      const userEmail = props.currentSPContext.pageContext.user.email;
 
       const filter = `EmailAddress eq '${userEmail}'`;
 
       const data = await employeeMasterOps.getEmployeeMasterData(
         filter,
         "",
-        props
+        props,
       );
 
       if (data.length > 0) {
@@ -476,12 +462,11 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
   // ===============================
   const loadContractorAgencies = async () => {
     try {
-      const data =
-        await contractorAgencyOps.getContractorAgencyMasterData(
-          "Status eq 'Active'",
-          "ContractorAgency asc",
-          props
-        );
+      const data = await contractorAgencyOps.getContractorAgencyMasterData(
+        "Status eq 'Active'",
+        "ContractorAgency asc",
+        props,
+      );
 
       setContractorAgencies(data);
     } catch (error) {
@@ -494,12 +479,11 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
   // ===============================
   const loadTransporterAgencies = async () => {
     try {
-      const data =
-        await transporterAgencyOps.getTransporterAgencyMasterData(
-          "Status eq 'Active'",
-          "TransporterName asc",
-          props
-        );
+      const data = await transporterAgencyOps.getTransporterAgencyMasterData(
+        "Status eq 'Active'",
+        "TransporterName asc",
+        props,
+      );
 
       setTransporterAgencies(data);
     } catch (error) {
@@ -514,7 +498,7 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
     agencyId: string,
     agencyVal: string,
     codeVal: string,
-    emailVal: string
+    emailVal: string,
   ) => (
     <div className="svc-row svc-cols-3">
       <div className="svc-field">
@@ -554,6 +538,14 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
       </div>
     </div>
   );
+
+  useEffect(() => {
+    void loadEventTypes();
+    void loadSeverityMatrix();
+    void loadLoggedInEmployee();
+    void loadContractorAgencies();
+    void loadTransporterAgencies();
+  }, []);
 
   return (
     <div className="svc-container">
@@ -614,10 +606,16 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
               <option value="">Select</option>
               <option value="Life Saving Rule">Life Saving Rule</option>
               <option value="Site Safety Rule">Site Safety Rule</option>
-              <option value="Safety Standard /Procedure /JSA">Safety Standard /Procedure /JSA</option>
+              <option value="Safety Standard /Procedure /JSA">
+                Safety Standard /Procedure /JSA
+              </option>
               <option value="SAN compliance">SAN compliance</option>
-              <option value="Incident Recommendations">Incident Recommendations</option>
-              <option value="SOPs , Work Instruction, Established practice compliance">SOPs , Work Instruction, Established practice compliance</option>
+              <option value="Incident Recommendations">
+                Incident Recommendations
+              </option>
+              <option value="SOPs , Work Instruction, Established practice compliance">
+                SOPs , Work Instruction, Established practice compliance
+              </option>
               <option value="Legal compliance">Legal compliance</option>
             </select>
           </div>
@@ -676,7 +674,11 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
           <div className="svc-field">
             <label htmlFor="observerName">Observer Name:</label>
 
-            <input id="observerName" value={formData.observerName} />
+            <input
+              id="observerName"
+              onChange={handleChange}
+              value={formData.observerName}
+            />
           </div>
 
           <div className="svc-field">
@@ -684,6 +686,7 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
 
             <input
               id="observerDepartment"
+              onChange={handleChange}
               value={formData.observerDepartment}
             />
           </div>
@@ -691,7 +694,11 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
           <div className="svc-field">
             <label htmlFor="observerPosition">Observer Position:</label>
 
-            <input id="observerPosition" value={formData.observerPosition} />
+            <input
+              id="observerPosition"
+              onChange={handleChange}
+              value={formData.observerPosition}
+            />
           </div>
         </div>
 
@@ -759,11 +766,73 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
           </div>
         </div>
 
-        {/* Employee / Contractor */}
-        {(formData.employmentType === "Employee" ||
-          formData.employmentType === "Contractor") && (
+        {/* Employee */}
+        {formData.employmentType === "Employee" && (
           <>
             {/* Violator Name */}
+            <div className="svc-field">
+              <label htmlFor="violatorName">Name of Violator:</label>
+
+              <PeoplePicker
+                webAbsoluteUrl={
+                  props.currentSPContext.pageContext.web.absoluteUrl
+                }
+                context={props.currentSPContext as any}
+                personSelectionLimit={1}
+                showtooltip={true}
+                required={false}
+                disabled={false}
+                ensureUser={true}
+                principalTypes={[PrincipalType.User]}
+                onChange={(items: any[]) => {
+                  setFormData((prev: any) => ({
+                    ...prev,
+                    violatorName:
+                      items.length > 0 ? items[0].text : "",
+                  }));
+                }}
+              />
+            </div>
+
+            {/* Department / Emp No / Position */}
+            <div className="svc-row svc-cols-3">
+              <div className="svc-field">
+                <label htmlFor="violatorDepartment">Department:</label>
+
+                <input
+                  id="violatorDepartment"
+                  onChange={handleChange}
+                  value={formData.violatorDepartment}
+                />
+              </div>
+
+              <div className="svc-field">
+                <label htmlFor="empNo">Emp No./Gate Pass No.:</label>
+
+                <input
+                  id="empNo"
+                  onChange={handleChange}
+                  value={formData.empNo}
+                />
+              </div>
+
+              <div className="svc-field">
+                <label htmlFor="violatorPosition">Position / Trade:</label>
+
+                <input
+                  id="violatorPosition"
+                  onChange={handleChange}
+                  value={formData.violatorPosition}
+                />
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Contractor & Transporter */}
+        {(formData.employmentType === "Contractor" ||
+          formData.employmentType === "Transporter") && (
+          <>
             <div className="svc-row svc-cols-1">
               <div className="svc-field">
                 <label htmlFor="violatorName">Name of Violator:</label>
@@ -906,7 +975,7 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
         <button
           className="btn-secondary"
           type="button"
-          disabled={submitting}
+          disabled={submitting || !formData.agreed}
           onClick={handleSaveDraft}
         >
           {submitting ? "Saving..." : "Save Draft"}
@@ -915,7 +984,7 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
         <button
           className="btn-primary"
           type="button"
-          disabled={submitting}
+          disabled={submitting || !formData.agreed}
           onClick={handleSubmit}
         >
           {submitting ? "Submitting..." : "Submit"}

@@ -1,5 +1,8 @@
+
 @import '~@fluentui/react/dist/sass/References.scss';
-//---
+
+/* Hide SharePoint Default Elements */
+
 #spCommandBar,
 #spSiteHeader,
 #spLeftNav,
@@ -8,9 +11,9 @@
 #CommentsWrapper {
   display: none !important;
 }
+
 .CanvasZone {
   padding: 0 !important;
-
 }
 
 .ControlZone {
@@ -20,16 +23,19 @@
 
 body {
   font-family: Arial, Helvetica, sans-serif !important;
+  margin: 0;
+  padding: 0;
 }
 
 #workbenchPageContent {
   max-width: 100% !important;
 }
 
-#workbenchPageContent>div>div>div {
+#workbenchPageContent > div > div > div {
   padding: 0 !important;
 }
-//---
+
+/* MAIN WRAPPER */
 
 .pcm {
   overflow: hidden;
@@ -41,32 +47,39 @@ body {
   }
 }
 
+/* FULL SCREEN CONTAINER */
+
 .pcm-container {
   display: flex;
-  height: 500px;
+  width: 100%;
+  min-height: 100vh;
+
   background: linear-gradient(to right, #b1ccf0, #ffffff);
+
   overflow: hidden;
 }
 
-/* LEFT SIDE */
+/* LEFT SECTION */
 
 .pcm-left {
   width: 50%;
-  padding: 40px;
+  padding: 80px 60px;
 
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
+/* TITLE */
+
 .pcm-title {
   font-family: "Segoe UI";
-  font-size: 28px;
+  font-size: 36px;
   font-weight: 700;
   color: #000000;
 
-  margin-bottom: 25px;
-  // letter-spacing: 0.5px;
+  margin-bottom: 35px;
+  line-height: 1.2;
 }
 
 /* GRID */
@@ -74,21 +87,23 @@ body {
 .pcm-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
-  width: 320px;
+  gap: 20px;
+
+  width: 100%;
+  max-width: 420px;
 }
 
 /* TILE */
 
 .pcm-tile {
   width: 100%;
-  height: 50px;
+  height: 60px;
 
   background-color: #5b8fdc;
   color: white;
 
-  border: 1px solid black;
-  border-radius: 6px;
+  border: 1px solid #000;
+  border-radius: 10px;
 
   display: flex;
   align-items: center;
@@ -99,22 +114,101 @@ body {
   font-size: 16px;
   font-weight: 600;
 
-  transition: 0.3s;
+  transition: all 0.3s ease;
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .pcm-tile:hover {
   background-color: #0b71ff;
-  transform: scale(1.05);
+  transform: translateY(-3px) scale(1.03);
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-/* RIGHT IMAGE */
+/* RIGHT IMAGE SECTION */
 
 .pcm-right {
   width: 50%;
+  min-height: 100vh;
+
+  position: relative;
+
   background-image: url('../../../assets/SideImage.jpg');
   background-size: cover;
-  background-position: center;
+  background-position: center center;
   background-repeat: no-repeat;
 
-  clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+  /* Stylish diagonal fullscreen design */
+  clip-path: polygon(18% 0, 100% 0, 100% 100%, 0% 100%);
 }
+
+/* Optional Dark Overlay */
+
+.pcm-right::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* RESPONSIVE DESIGN */
+
+@media screen and (max-width: 1024px) {
+  .pcm-left {
+    padding: 60px 40px;
+  }
+
+  .pcm-title {
+    font-size: 30px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .pcm-container {
+    flex-direction: column;
+  }
+
+  .pcm-left,
+  .pcm-right {
+    width: 100%;
+  }
+
+  .pcm-left {
+    min-height: auto;
+    padding: 50px 25px;
+  }
+
+  .pcm-right {
+    height: 350px;
+    min-height: 350px;
+
+    clip-path: none;
+  }
+
+  .pcm-title {
+    font-size: 28px;
+    text-align: center;
+  }
+
+  .pcm-grid {
+    max-width: 100%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .pcm-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pcm-tile {
+    height: 55px;
+    font-size: 15px;
+  }
+
+  .pcm-title {
+    font-size: 24px;
+  }
+}
+

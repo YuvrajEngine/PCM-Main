@@ -5,6 +5,9 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
 import "../Pages/CSS/Pcm.scss";
+import Swal from "sweetalert2";
+import { useState, useEffect } from "react";
+import { SPHttpClient } from "@microsoft/sp-http";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFileExcel,
@@ -24,16 +27,7 @@ const Bjfcl: React.FC<IPcmProps> = (props: IPcmProps) => {
   const [violationData, setViolationData] = React.useState<any[]>([]);
   const [searchText, setSearchText] = React.useState<string>("");
   const [employmentFilter, setEmploymentFilter] = React.useState<string>("All");
-
-  // ✅ Guard + props as dependency so it waits until SP context is ready
-  // React.useEffect(() => {
-  //   if (!props?.currentSPContext) return;
-  //   getSafetyViolationData();
-  // }, [props]);
-
-  React.useEffect(() => {
-    getSafetyViolationData();
-  }, []);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   const getSafetyViolationData = async () => {
     try {
@@ -70,8 +64,19 @@ const Bjfcl: React.FC<IPcmProps> = (props: IPcmProps) => {
   // ===============================
   // Export Excel
   // ===============================
-  const handleExportExcel = () => {
+  const handleExportExcel = async () => {
     try {
+      // No Data Validation
+      if (violationData.length === 0) {
+        await Swal.fire({
+          icon: "warning",
+          title: "No Data",
+          text: "No data available to export",
+        });
+
+        return;
+      }
+
       const excelData = violationData.map((item: any) => ({
         "Request No": item.Title,
 
@@ -105,16 +110,43 @@ const Bjfcl: React.FC<IPcmProps> = (props: IPcmProps) => {
       XLSX.utils.book_append_sheet(workbook, worksheet, "SafetyViolation");
 
       XLSX.writeFile(workbook, "SafetyViolationDetails.xlsx");
+
+      // Success Alert
+      await Swal.fire({
+        icon: "success",
+        title: "Exported",
+        text: "Excel exported successfully",
+        timer: 1500,
+        showConfirmButton: false,
+      });
     } catch (error) {
       console.error("Excel Export Error:", error);
+
+      // Error Alert
+      await Swal.fire({
+        icon: "error",
+        title: "Export Failed",
+        text: "Unable to export Excel",
+      });
     }
   };
 
   // ===============================
   // Export PDF
   // ===============================
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     try {
+      // No Data Validation
+      if (violationData.length === 0) {
+        void Swal.fire({
+          icon: "warning",
+          title: "No Data",
+          text: "No data available to export",
+        });
+
+        return;
+      }
+
       const doc = new jsPDF();
 
       doc.setFontSize(16);
@@ -162,15 +194,31 @@ const Bjfcl: React.FC<IPcmProps> = (props: IPcmProps) => {
       });
 
       doc.save("SafetyViolationDetails.pdf");
+
+      // Success Alert
+      void Swal.fire({
+        icon: "success",
+        title: "Exported",
+        text: "PDF exported successfully",
+        timer: 1500,
+        showConfirmButton: false,
+      });
     } catch (error) {
       console.error("PDF Export Error:", error);
+
+      // Error Alert
+      void Swal.fire({
+        icon: "error",
+        title: "Export Failed",
+        text: "Unable to export PDF",
+      });
     }
   };
 
   // ===============================
   // Print Table
   // ===============================
-  const handlePrint = () => {
+  const handlePrint = async () => {
     const printContents = document.getElementById("printTable")?.innerHTML;
 
     const printWindow = window.open("", "", "width=900,height=650");
@@ -226,11 +274,53 @@ const Bjfcl: React.FC<IPcmProps> = (props: IPcmProps) => {
     }
   };
 
+  React.useEffect(() => {
+    void getSafetyViolationData();
+  }, []);
+
+  useEffect(() => {
+    const loadCurrentUser = async () => {
+      try {
+        const user = await props.currentSPContext.spHttpClient
+          .get(
+            `${props.currentSPContext.pageContext.web.absoluteUrl}/_api/web/currentuser`,
+            SPHttpClient.configurations.v1,
+          )
+          .then((res: Response) => res.json());
+
+        setCurrentUser(user);
+      } catch (error) {
+        console.error("Error loading current user:", error);
+      }
+    };
+
+    void loadCurrentUser();
+  }, []);
+
   return (
     <div className="dashboard">
       {/* Header */}
       <div className="dash-header">
-        <span className="dash-breadcrumb">Unit: BJFCL</span>
+        {/* Left Logo */}
+        <div className="dash-left">
+          <img
+            src={require("../../assets/ABGlogo.jpg")}
+            alt="Logo"
+            className="dash-logo"
+          />
+
+          <span className="dash-title">Safety Violation Details</span>
+        </div>
+
+        {/* Right User Info */}
+        <div className="dash-right">
+          <span className="dash-breadcrumb">Unit: BJFCL</span>
+
+          <div className="dash-user">
+            <i className="fas fa-user-circle"></i>
+            <span>{currentUser?.Title}</span>
+          </div>
+        </div>
       </div>
 
       <div className="container">
@@ -295,7 +385,7 @@ const Bjfcl: React.FC<IPcmProps> = (props: IPcmProps) => {
 
                   <button
                     className="report-dropdown-item"
-                    onClick={() => history.push("/DetailViolationReport")}
+                    onClick={() => history.push("/SeverityViolationReport")}
                   >
                     Detail Violation Report
                   </button>
@@ -380,16 +470,46 @@ const Bjfcl: React.FC<IPcmProps> = (props: IPcmProps) => {
                   filteredData.map((item: any, index: number) => (
                     <tr key={index}>
                       <td>
-                        <span
-                          className="violation-link"
-                          onClick={() => {
-                            console.log("ROW ITEM:", item);
-                            console.log("Clicked ID:", item.Id);
-                            history.push(`/SafetyViolationRequestEdit?ReqID=${item.SafetyViolationCardNumber}`);
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "6px",
                           }}
                         >
-                          {item.Title}
-                        </span>
+                          {/* Existing Req No Link */}
+                          <span
+                            className="violation-link"
+                            onClick={() => {
+                              console.log("ROW ITEM:", item);
+                              console.log("Clicked ID:", item.Id);
+
+                              history.push(
+                                `/SafetyViolationRequestEdit?ReqID=${item.Title}`,
+                              );
+                            }}
+                          >
+                            {item.Title}
+                          </span>
+
+                          {/* PDF Icon */}
+                          {item.Status === "Submitted" && (
+                            <FontAwesomeIcon
+                              icon={faFilePdf}
+                              title="View PDF"
+                              style={{
+                                color: "red",
+                                cursor: "pointer",
+                                fontSize: "18px",
+                              }}
+                              onClick={() => {
+                                history.push(
+                                  `/SafetyViolationPdf?ReqNo=${item.Title}`,
+                                );
+                              }}
+                            />
+                          )}
+                        </div>
                       </td>
                       <td>
                         {item.RequestDate

@@ -97,7 +97,8 @@
 }
 
 .search-btn,
-.severity-excel-btn {
+.severity-excel-btn,
+.btn-ghost {
   height: 34px;
   border: none;
   border-radius: 3px;
@@ -107,7 +108,7 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   transition: background 0.15s ease;
 }
 
@@ -132,6 +133,16 @@
     background: #a61b1b;
   }
 }
+//----button ghost------
+.btn-ghost {
+  background: #000000;
+  color: #fff;
+
+  &:hover {
+    background: #616161;
+  }
+}
+
 
 /* ───────────────── Violator Search ───────────────── */
 

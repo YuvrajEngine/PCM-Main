@@ -3,12 +3,14 @@ import { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import "../Pages/CSS/SafetyViolationRequest.scss";
 import "../Pages/CSS/Pcm.scss";
-
+import {
+  PeoplePicker,
+  PrincipalType,
+} from "@pnp/spfx-controls-react/lib/PeoplePicker";
 import Swal from "sweetalert2";
 
 import SafetyViolationEventMasterOps from "../../services/BAL/SafetyViolationEventMaster";
 import SeverityMatrixOps from "../../services/BAL/SeverityMatrixMaster";
-import EmployeeMasterOps from "../../services/BAL/EmployeeMaster";
 import ContractorAgencyMasterOps from "../../services/BAL/ContractorAgencyMaster";
 import TransporterAgencyMasterOps from "../../services/BAL/TransporterAgencyMaster";
 
@@ -21,7 +23,6 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
 
   const eventMasterOps = SafetyViolationEventMasterOps();
   const severityMatrixOps = SeverityMatrixOps();
-  const employeeMasterOps = EmployeeMasterOps();
   const contractorAgencyOps = ContractorAgencyMasterOps();
   const transporterAgencyOps = TransporterAgencyMasterOps();
 
@@ -34,7 +35,12 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
 
   const [contractorAgencies, setContractorAgencies] = useState<any[]>([]);
   const [transporterAgencies, setTransporterAgencies] = useState<any[]>([]);
+
   const [itemId, setItemId] = useState<number>(0);
+
+  const [requestStatus, setRequestStatus] = useState<string>("Draft");
+
+  const isEditable = requestStatus === "Draft";
 
   const [formData, setFormData] = useState({
     typeOfViolation: "",
@@ -63,24 +69,14 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
     agreed: false,
   });
 
-  useEffect(() => {
-    loadEventTypes();
-    loadSeverityMatrix();
-    loadContractorAgencies();
-    loadTransporterAgencies();
-
-    loadExistingData();
-  }, []);
-
   const loadExistingData = async () => {
     try {
       const hash = window.location.hash;
       const queryString = hash.split("?")[1];
 
       const queryParams = new URLSearchParams(queryString);
-      const reqNo = queryParams.get("ReqID");
 
-      console.log("Req No:", reqNo);
+      const reqNo = queryParams.get("ReqID");
 
       const spCrud = await SPCRUDOPS();
 
@@ -88,7 +84,7 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
         "SafetyViolationDetails",
         "*,EventType/Id,EventType/Title",
         "EventType",
-        `SafetyViolationCardNumber eq '${reqNo}'`,
+        `(SafetyViolationCardNumber eq '${reqNo}' or Title eq '${reqNo}')`,
         {
           column: "Id",
           isAscending: false,
@@ -97,7 +93,7 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
       );
 
       if (data.length === 0) {
-        Swal.fire("Error", "Record not found", "error");
+        await Swal.fire("Error", "Record not found", "error");
         return;
       }
 
@@ -105,7 +101,7 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
 
       setItemId(item.Id);
 
-      console.log("Edit Item:", item);
+      setRequestStatus(item.Status || "Draft");
 
       setFormData({
         typeOfViolation: item.TypeOfViolation || "",
@@ -155,7 +151,7 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
 
         remarks: item.RemarksForWarning || "",
 
-        agreed: true,
+        agreed: false,
       });
     } catch (error) {
       console.log("Error loading edit data:", error);
@@ -168,6 +164,8 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
     >,
   ) => {
     const { id, value, type } = e.target;
+
+    if (!isEditable && id !== "agreed") return;
 
     if (id === "contractorAgency") {
       const selectedAgency = contractorAgencies.find(
@@ -207,6 +205,8 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isEditable) return;
+
     setAttachments(e.target.files);
   };
 
@@ -325,15 +325,15 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
 
       await Swal.fire({
         icon: "success",
-        title: "Updated Successfully",
-        text: "Safety Violation updated successfully",
+        title: "Success",
+        text: `Record ${status} Successfully`,
       });
 
       history.push("/bjfcl");
     } catch (error) {
       console.log(error);
 
-      Swal.fire({
+      await Swal.fire({
         icon: "error",
         title: "Error",
         text: "Error while updating record",
@@ -343,55 +343,25 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
     }
   };
 
-  const renderAgencyBlock = (
-    agencyId: string,
-    agencyVal: string,
-    codeVal: string,
-    emailVal: string,
-  ) => (
-    <div className="svc-row svc-cols-3">
-      <div className="svc-field">
-        <label htmlFor={agencyId}>Vendor Agency:</label>
+  const commonProps = {
+    disabled: !isEditable,
+  };
 
-        <select id={agencyId} value={agencyVal} onChange={handleChange}>
-          <option value="">Select</option>
-
-          {agencyId === "contractorAgency" &&
-            contractorAgencies.map((item: any) => (
-              <option key={item.Id} value={item.ContractorAgency}>
-                {item.ContractorAgency}
-              </option>
-            ))}
-
-          {agencyId === "transporterAgency" &&
-            transporterAgencies.map((item: any) => (
-              <option key={item.Id} value={item.TransporterName}>
-                {item.TransporterName}
-              </option>
-            ))}
-        </select>
-      </div>
-
-      <div className="svc-field">
-        <label>Vendor Code:</label>
-
-        <input type="text" value={codeVal} readOnly />
-      </div>
-
-      <div className="svc-field">
-        <label>Vendor Email ID:</label>
-
-        <input type="text" value={emailVal} readOnly />
-      </div>
-    </div>
-  );
+  useEffect(() => {
+    void loadEventTypes();
+    void loadSeverityMatrix();
+    void loadContractorAgencies();
+    void loadTransporterAgencies();
+    void loadExistingData();
+  }, []);
 
   return (
     <div className="svc-container">
+      {/* SECTION 1 */}
       <div className="svc-header">
-        <h4 className="svc-title">Edit Safety Violation Card</h4>
+        {" "}
+        <h4 className="svc-title">Edit Safety Violation Card</h4>{" "}
       </div>
-
       <div className="svc-section">
         <h5 className="svc-section-title">1. Violation Details:</h5>
 
@@ -404,6 +374,7 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
               id="typeOfViolation"
               onChange={handleChange}
               value={formData.typeOfViolation}
+              disabled={!isEditable}
             >
               <option value="">Select</option>
               <option value="Observation">Observation</option>
@@ -418,6 +389,7 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
               id="severity"
               onChange={handleChange}
               value={formData.severity}
+              disabled={!isEditable}
             >
               <option value="">Select</option>
 
@@ -438,20 +410,28 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
               id="violationWithRespectTo"
               onChange={handleChange}
               value={formData.violationWithRespectTo}
+              disabled={!isEditable}
             >
               <option value="">Select</option>
+
               <option value="Life Saving Rule">Life Saving Rule</option>
+
               <option value="Site Safety Rule">Site Safety Rule</option>
+
               <option value="Safety Standard /Procedure /JSA">
                 Safety Standard /Procedure /JSA
               </option>
+
               <option value="SAN compliance">SAN compliance</option>
+
               <option value="Incident Recommendations">
                 Incident Recommendations
               </option>
+
               <option value="SOPs , Work Instruction, Established practice compliance">
                 SOPs , Work Instruction, Established practice compliance
               </option>
+
               <option value="Legal compliance">Legal compliance</option>
             </select>
           </div>
@@ -463,6 +443,7 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
               id="eventType"
               onChange={handleChange}
               value={formData.eventType}
+              disabled={!isEditable}
             >
               <option value="">Select</option>
 
@@ -485,6 +466,7 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
               id="observationDate"
               onChange={handleChange}
               value={formData.observationDate}
+              readOnly={!isEditable}
             />
           </div>
 
@@ -497,6 +479,7 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
               placeholder="Describe the violation..."
               onChange={handleChange}
               value={formData.violationDetails}
+              readOnly={!isEditable}
             />
           </div>
         </div>
@@ -510,7 +493,12 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
           <div className="svc-field">
             <label htmlFor="observerName">Observer Name:</label>
 
-            <input id="observerName" value={formData.observerName} />
+            <input
+              id="observerName"
+              onChange={handleChange}
+              value={formData.observerName}
+              readOnly={!isEditable}
+            />
           </div>
 
           <div className="svc-field">
@@ -518,14 +506,21 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
 
             <input
               id="observerDepartment"
+              onChange={handleChange}
               value={formData.observerDepartment}
+              readOnly={!isEditable}
             />
           </div>
 
           <div className="svc-field">
             <label htmlFor="observerPosition">Observer Position:</label>
 
-            <input id="observerPosition" value={formData.observerPosition} />
+            <input
+              id="observerPosition"
+              onChange={handleChange}
+              value={formData.observerPosition}
+              readOnly={!isEditable}
+            />
           </div>
         </div>
 
@@ -539,6 +534,7 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
               placeholder="Describe any evidence..."
               onChange={handleChange}
               value={formData.evidence}
+              readOnly={!isEditable}
             />
           </div>
 
@@ -561,6 +557,7 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
                 type="file"
                 multiple
                 onChange={handleFileChange}
+                disabled={!isEditable}
                 style={{ display: "none" }}
               />
             </div>
@@ -581,6 +578,7 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
               id="employmentType"
               onChange={handleChange}
               value={formData.employmentType}
+              disabled={!isEditable}
             >
               <option value="">Select</option>
 
@@ -593,24 +591,37 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
           </div>
         </div>
 
-        {/* Employee / Contractor */}
-        {(formData.employmentType === "Employee" ||
-          formData.employmentType === "Contractor") && (
+        {/* Employee */}
+        {formData.employmentType === "Employee" && (
           <>
-            {/* Violator Name */}
             <div className="svc-row svc-cols-1">
               <div className="svc-field">
                 <label htmlFor="violatorName">Name of Violator:</label>
 
-                <input
-                  id="violatorName"
-                  onChange={handleChange}
-                  value={formData.violatorName}
+                <PeoplePicker
+                  webAbsoluteUrl={
+                    props.currentSPContext.pageContext.web.absoluteUrl
+                  }
+                  context={props.currentSPContext as any}
+                  personSelectionLimit={1}
+                  showtooltip={true}
+                  required={false}
+                  disabled={!isEditable}
+                  ensureUser={true}
+                  principalTypes={[PrincipalType.User]}
+                  defaultSelectedUsers={
+                    formData.violatorName ? [formData.violatorName] : []
+                  }
+                  onChange={(items: any[]) => {
+                    setFormData((prev: any) => ({
+                      ...prev,
+                      violatorName: items.length > 0 ? items[0].text : "",
+                    }));
+                  }}
                 />
               </div>
             </div>
 
-            {/* Department / Emp No / Position */}
             <div className="svc-row svc-cols-3">
               <div className="svc-field">
                 <label htmlFor="violatorDepartment">Department:</label>
@@ -619,6 +630,7 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
                   id="violatorDepartment"
                   onChange={handleChange}
                   value={formData.violatorDepartment}
+                  readOnly={!isEditable}
                 />
               </div>
 
@@ -629,6 +641,7 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
                   id="empNo"
                   onChange={handleChange}
                   value={formData.empNo}
+                  readOnly={!isEditable}
                 />
               </div>
 
@@ -639,25 +652,16 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
                   id="violatorPosition"
                   onChange={handleChange}
                   value={formData.violatorPosition}
+                  readOnly={!isEditable}
                 />
               </div>
             </div>
           </>
         )}
 
-        {/* Contractor Agency */}
-        {formData.employmentType === "Contractor" &&
-          renderAgencyBlock(
-            "contractorAgency",
-            formData.contractorAgency,
-            formData.contractorVendorCode,
-            formData.contractorVendorEmail,
-          )}
-
-        {/* Transporter */}
-        {formData.employmentType === "Transporter" && (
+        {/* Contractor */}
+        {formData.employmentType === "Contractor" && (
           <>
-            {/* Violator Name */}
             <div className="svc-row svc-cols-1">
               <div className="svc-field">
                 <label htmlFor="violatorName">Name of Violator:</label>
@@ -666,17 +670,148 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
                   id="violatorName"
                   onChange={handleChange}
                   value={formData.violatorName}
+                  readOnly={!isEditable}
                 />
               </div>
             </div>
 
-            {/* Agency Details */}
-            {renderAgencyBlock(
-              "transporterAgency",
-              formData.transporterAgency,
-              formData.transporterVendorCode,
-              formData.transporterVendorEmail,
-            )}
+            <div className="svc-row svc-cols-3">
+              <div className="svc-field">
+                <label htmlFor="violatorDepartment">Department:</label>
+
+                <input
+                  id="violatorDepartment"
+                  onChange={handleChange}
+                  value={formData.violatorDepartment}
+                  readOnly={!isEditable}
+                />
+              </div>
+
+              <div className="svc-field">
+                <label htmlFor="empNo">Emp No./Gate Pass No.:</label>
+
+                <input
+                  id="empNo"
+                  onChange={handleChange}
+                  value={formData.empNo}
+                  readOnly={!isEditable}
+                />
+              </div>
+
+              <div className="svc-field">
+                <label htmlFor="violatorPosition">Position / Trade:</label>
+
+                <input
+                  id="violatorPosition"
+                  onChange={handleChange}
+                  value={formData.violatorPosition}
+                  readOnly={!isEditable}
+                />
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Contractor */}
+        {formData.employmentType === "Contractor" && (
+          <div className="svc-row svc-cols-3">
+            <div className="svc-field">
+              <label htmlFor="contractorAgency">Vendor Agency:</label>
+
+              <select
+                id="contractorAgency"
+                value={formData.contractorAgency}
+                onChange={handleChange}
+                disabled={!isEditable}
+              >
+                <option value="">Select</option>
+
+                {contractorAgencies.map((item: any) => (
+                  <option key={item.Id} value={item.ContractorAgency}>
+                    {item.ContractorAgency}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="svc-field">
+              <label>Vendor Code:</label>
+
+              <input
+                type="text"
+                value={formData.contractorVendorCode}
+                readOnly
+              />
+            </div>
+
+            <div className="svc-field">
+              <label>Vendor Email ID:</label>
+
+              <input
+                type="text"
+                value={formData.contractorVendorEmail}
+                readOnly
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Transporter */}
+        {formData.employmentType === "Transporter" && (
+          <>
+            <div className="svc-row svc-cols-1">
+              <div className="svc-field">
+                <label htmlFor="violatorName">Name of Violator:</label>
+
+                <input
+                  id="violatorName"
+                  onChange={handleChange}
+                  value={formData.violatorName}
+                  readOnly={!isEditable}
+                />
+              </div>
+            </div>
+
+            <div className="svc-row svc-cols-3">
+              <div className="svc-field">
+                <label htmlFor="transporterAgency">Vendor Agency:</label>
+
+                <select
+                  id="transporterAgency"
+                  value={formData.transporterAgency}
+                  onChange={handleChange}
+                  disabled={!isEditable}
+                >
+                  <option value="">Select</option>
+
+                  {transporterAgencies.map((item: any) => (
+                    <option key={item.Id} value={item.TransporterName}>
+                      {item.TransporterName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="svc-field">
+                <label>Vendor Code:</label>
+
+                <input
+                  type="text"
+                  value={formData.transporterVendorCode}
+                  readOnly
+                />
+              </div>
+
+              <div className="svc-field">
+                <label>Vendor Email ID:</label>
+
+                <input
+                  type="text"
+                  value={formData.transporterVendorEmail}
+                  readOnly
+                />
+              </div>
+            </div>
           </>
         )}
       </div>
@@ -695,6 +830,7 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
               onChange={handleChange}
               placeholder="0.0"
               value={formData.penaltyAmount}
+              readOnly={!isEditable}
             />
 
             <span className="svc-field-hint">in Rs.</span>
@@ -707,6 +843,7 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
               id="remarks"
               onChange={handleChange}
               value={formData.remarks}
+              readOnly={!isEditable}
             />
           </div>
         </div>
@@ -727,6 +864,7 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
         </label>
       </div>
 
+      {/* Actions */}
       <div className="svc-actions">
         <button
           className="btn-ghost"
@@ -737,12 +875,21 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
         </button>
 
         <button
+          className="btn-secondary"
+          type="button"
+          disabled={submitting || !formData.agreed || !isEditable}
+          onClick={() => updateData("Draft")}
+        >
+          {submitting ? "Saving..." : "Save Draft"}
+        </button>
+
+        <button
           className="btn-primary"
           type="button"
-          disabled={submitting}
+          disabled={submitting || !formData.agreed || !isEditable}
           onClick={() => updateData("Submitted")}
         >
-          {submitting ? "Updating..." : "Update Record"}
+          {submitting ? "Submitting..." : "Submit"}
         </button>
       </div>
     </div>
