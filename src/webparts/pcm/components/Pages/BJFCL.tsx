@@ -28,19 +28,28 @@ const Bjfcl: React.FC<IPcmProps> = (props: IPcmProps) => {
   const [searchText, setSearchText] = React.useState<string>("");
   const [employmentFilter, setEmploymentFilter] = React.useState<string>("All");
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  // Pagination
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const recordsPerPage = 10;
 
   const getSafetyViolationData = async () => {
     try {
+      setLoading(true);
+
       const safetyOps = SafetyViolationDetailsOps();
+
       const data = await safetyOps.getSafetyViolationDetailsData(
         "",
         { column: "Id", isAscending: false },
         props,
       );
-      console.log("Safety Violation Data:", data);
+
       setViolationData(data);
     } catch (error) {
       console.error("Error loading safety violation data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,6 +69,17 @@ const Bjfcl: React.FC<IPcmProps> = (props: IPcmProps) => {
 
     return matchesSearch && matchesEmployment;
   });
+
+  // Pagination Logic
+  const totalEntries = filteredData.length;
+
+  const totalPages = Math.ceil(totalEntries / recordsPerPage);
+
+  const startIndex = (currentPage - 1) * recordsPerPage;
+
+  const endIndex = startIndex + recordsPerPage;
+
+  const paginatedData = filteredData.slice(startIndex, endIndex);
 
   // ===============================
   // Export Excel
@@ -299,6 +319,11 @@ const Bjfcl: React.FC<IPcmProps> = (props: IPcmProps) => {
 
   return (
     <div className="dashboard">
+      {loading && (
+        <div className="loader-overlay">
+          <div className="modern-spinner"></div>
+        </div>
+      )}
       {/* Header */}
       <div className="dash-header">
         {/* Left Logo */}
@@ -353,7 +378,10 @@ const Bjfcl: React.FC<IPcmProps> = (props: IPcmProps) => {
                 placeholder="Search violations..."
                 className="search"
                 value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
+                onChange={(e) => {
+                  setSearchText(e.target.value);
+                  setCurrentPage(1);
+                }}
               />
             </div>
 
@@ -410,28 +438,40 @@ const Bjfcl: React.FC<IPcmProps> = (props: IPcmProps) => {
                 <div className="report-dropdown-menu">
                   <button
                     className="report-dropdown-item"
-                    onClick={() => setEmploymentFilter("All")}
+                    onClick={() => {
+                      setEmploymentFilter("All");
+                      setCurrentPage(1);
+                    }}
                   >
                     All
                   </button>
 
                   <button
                     className="report-dropdown-item"
-                    onClick={() => setEmploymentFilter("Employee")}
+                    onClick={() => {
+                      setEmploymentFilter("Employee");
+                      setCurrentPage(1);
+                    }}
                   >
                     Employee
                   </button>
 
                   <button
                     className="report-dropdown-item"
-                    onClick={() => setEmploymentFilter("Contractor")}
+                    onClick={() => {
+                      setEmploymentFilter("Contractor");
+                      setCurrentPage(1);
+                    }}
                   >
                     Contractor
                   </button>
 
                   <button
                     className="report-dropdown-item"
-                    onClick={() => setEmploymentFilter("Transporter")}
+                    onClick={() => {
+                      setEmploymentFilter("Transporter");
+                      setCurrentPage(1);
+                    }}
                   >
                     Transporter
                   </button>
@@ -442,114 +482,171 @@ const Bjfcl: React.FC<IPcmProps> = (props: IPcmProps) => {
         </div>
 
         {/* Table Section */}
-        <div className="table-wrapper">
-          <div id="printTable">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Violation No</th>
-                  <th>Date</th>
-                  <th>Observation Date</th>
-                  <th>EC No / Gate Pass No</th>
-                  <th>Name</th>
-                  <th>Department</th>
-                  <th>Employment Type</th>
-                  <th>Severity Of Violation</th>
-                  <th>Violation Details</th>
-                  <th>Vendor / Contractor Details</th>
-                  <th>Penalty Amount</th>
-                  <th>Type Of Consequence</th>
-                  <th>Suggested Consequence</th>
-                  <th>Actual Consequence</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
+        {loading ? (
+          <div className="svc-loader-wrapper">
+            <div className="svc-loader"></div>
 
-              <tbody>
-                {filteredData.length > 0 ? (
-                  filteredData.map((item: any, index: number) => (
-                    <tr key={index}>
-                      <td>
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "6px",
-                          }}
-                        >
-                          {/* Existing Req No Link */}
-                          <span
-                            className="violation-link"
-                            onClick={() => {
-                              console.log("ROW ITEM:", item);
-                              console.log("Clicked ID:", item.Id);
+            <div className="svc-loader-text">Loading dashboard data...</div>
+          </div>
+        ) : (
+          <div className="table-wrapper">
+            <div id="printTable">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Violation No</th>
+                    <th>Date</th>
+                    <th>Observation Date</th>
+                    <th>EC No / Gate Pass No</th>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Employment Type</th>
+                    <th>Severity Of Violation</th>
+                    <th>Violation Details</th>
+                    <th>Vendor / Contractor Details</th>
+                    <th>Penalty Amount</th>
+                    <th>Type Of Consequence</th>
+                    <th>Suggested Consequence</th>
+                    <th>Actual Consequence</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
 
-                              history.push(
-                                `/SafetyViolationRequestEdit?ReqID=${item.Title}`,
-                              );
+                <tbody>
+                  {filteredData.length > 0 ? (
+                    paginatedData.map((item: any, index: number) => (
+                      <tr key={index}>
+                        <td>
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: "6px",
                             }}
                           >
-                            {item.Title}
-                          </span>
-
-                          {/* PDF Icon */}
-                          {item.Status === "Submitted" && (
-                            <FontAwesomeIcon
-                              icon={faFilePdf}
-                              title="View PDF"
-                              style={{
-                                color: "red",
-                                cursor: "pointer",
-                                fontSize: "18px",
-                              }}
+                            {/* Existing Req No Link */}
+                            <span
+                              className="violation-link"
                               onClick={() => {
+                                console.log("ROW ITEM:", item);
+                                console.log("Clicked ID:", item.Id);
+
                                 history.push(
-                                  `/SafetyViolationPdf?ReqNo=${item.Title}`,
+                                  `/SafetyViolationRequestEdit?ReqID=${item.Title}`,
                                 );
                               }}
-                            />
-                          )}
-                        </div>
+                            >
+                              {item.Title}
+                            </span>
+
+                            {/* PDF Icon */}
+                            {item.Status === "Submitted" && (
+                              <FontAwesomeIcon
+                                icon={faFilePdf}
+                                title="View PDF"
+                                style={{
+                                  color: "red",
+                                  cursor: "pointer",
+                                  fontSize: "18px",
+                                }}
+                                onClick={() => {
+                                  history.push(
+                                    `/SafetyViolationPdf?ReqNo=${item.Title}`,
+                                  );
+                                }}
+                              />
+                            )}
+                          </div>
+                        </td>
+                        <td>
+                          {item.RequestDate
+                            ? new Date(item.RequestDate).toLocaleDateString()
+                            : ""}
+                        </td>
+                        <td>
+                          {item.ObservationDate
+                            ? new Date(
+                                item.ObservationDate,
+                              ).toLocaleDateString()
+                            : ""}
+                        </td>
+                        <td>{item.EmpNoOrGatePass}</td>
+                        <td>{item.NameOfViolator}</td>
+                        <td>{item.ViolatorDepartment}</td>
+                        <td>{item.EmployementType}</td>
+                        <td>{item.SeverityOfViolation}</td>
+                        <td>{item.ViolationDetails}</td>
+                        <td>
+                          {item.ContractorAgency ||
+                          item.TransporterAgency ||
+                          item.VendorCode
+                            ? `${item.ContractorAgency || ""} ${item.TransporterAgency || ""} ${item.VendorCode || ""}`
+                            : ""}
+                        </td>
+                        <td>{item.PenaltyAmount}</td>
+                        <td>{item.TypeOfConsequence}</td>
+                        <td>{item.SuggestedConsequence}</td>
+                        <td>{item.ActualConsequence}</td>
+                        <td>{item.Status}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={15} style={{ textAlign: "center" }}>
+                        No records found
                       </td>
-                      <td>
-                        {item.RequestDate
-                          ? new Date(item.RequestDate).toLocaleDateString()
-                          : ""}
-                      </td>
-                      <td>
-                        {item.ObservationDate
-                          ? new Date(item.ObservationDate).toLocaleDateString()
-                          : ""}
-                      </td>
-                      <td>{item.EmpNoOrGatePass}</td>
-                      <td>{item.NameOfViolator}</td>
-                      <td>{item.ViolatorDepartment}</td>
-                      <td>{item.EmployementType}</td>
-                      <td>{item.SeverityOfViolation}</td>
-                      <td>{item.ViolationDetails}</td>
-                      <td>
-                        {item.ContractorAgency ||
-                        item.TransporterAgency ||
-                        item.VendorCode
-                          ? `${item.ContractorAgency || ""} ${item.TransporterAgency || ""} ${item.VendorCode || ""}`
-                          : ""}
-                      </td>
-                      <td>{item.PenaltyAmount}</td>
-                      <td>{item.TypeOfConsequence}</td>
-                      <td>{item.SuggestedConsequence}</td>
-                      <td>{item.ActualConsequence}</td>
-                      <td>{item.Status}</td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={15} style={{ textAlign: "center" }}>
-                      No records found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Pagination */}
+        <div className="custom-pagination-wrapper">
+          {/* Left Text */}
+          <div className="pagination-entry-text">
+            {totalEntries > 0
+              ? `${startIndex + 1} to ${Math.min(
+                  endIndex,
+                  totalEntries,
+                )} of ${totalEntries} entries`
+              : "0 entries"}
+          </div>
+
+          {/* Right Pagination */}
+          <div className="custom-pagination">
+            {/* Previous */}
+            <button
+              className="page-btn"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(currentPage - 1)}
+            >
+              Previous
+            </button>
+
+            {/* Page Numbers */}
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i + 1}
+                className={`page-btn ${
+                  currentPage === i + 1 ? "active-page" : ""
+                }`}
+                onClick={() => setCurrentPage(i + 1)}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            {/* Next */}
+            <button
+              className="page-btn"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(currentPage + 1)}
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>

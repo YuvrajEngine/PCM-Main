@@ -16,8 +16,32 @@
   padding: 11px 16px;
   border-radius: 4px;
   margin-bottom: 14px;
+
   display: flex;
   align-items: center;
+  justify-content: space-between;
+
+  color: #fff;
+}
+
+.svc-header-left,
+.svc-header-right {
+  width: 25%;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.svc-header-left {
+  text-align: left;
+}
+
+.svc-header-right {
+  text-align: right;
+}
+
+.svc-header-center {
+  width: 50%;
+  text-align: center;
 }
 
 .svc-title {
@@ -27,7 +51,6 @@
   letter-spacing: 0.3px;
   margin: 0;
 }
-
 /* ───────────────── Sections ───────────────── */
 
 .svc-section {
@@ -165,17 +188,17 @@
 
 .svc-file-wrapper {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 10px;
-  flex-wrap: wrap;
   padding: 6px 0;
 }
 
 /* Upload Button */
 .svc-file-btn {
-  background: #72a3ff;
+  background: #c62828;
   color: #fff;
-  padding: 8px 14px;
+  padding: 8px 16px;
   font-size: 12px;
   font-weight: 600;
   border-radius: 6px;
@@ -183,47 +206,104 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
+  transition: all 0.25s ease;
+  border: 1px solid #c62828;
   white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(198, 40, 40, 0.2);
 
   &:hover {
-    background: #5d93f7;
+    background: #b71c1c;
+    border-color: #b71c1c;
     transform: translateY(-1px);
   }
 
   &:active {
-    transform: translateY(0px);
+    transform: scale(0.98);
   }
 }
 
-/* File info text */
+/* Attachment Container */
 .svc-file-name {
-  font-size: 12px;
-  color: #000000;
-  background: #b8c9df;
-  padding: 6px 10px;
+  width: fit-content;
+  min-width: 180px;
+  max-width: 320px;
+  background: #fff5f5;
+  border: 1px solid #ef9a9a;
   border-radius: 6px;
-  border: 1px solid #e0e0e0;
-  max-width: 260px;
+  padding: 6px 8px;
+  font-size: 11px;
+  color: #444;
+}
+
+/* Existing Attachment List */
+.existing-files {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Each File Row */
+.attachment-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #f3d1d1;
+  border-radius: 5px;
+  padding: 4px 6px;
+  min-height: 30px;
+
+  &:hover {
+    background: #fff0f0;
+    border-color: #e57373;
+  }
+}
+
+/* File Link */
+.attachment-link {
+  color: #b71c1c;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 11px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  max-width: 180px;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
-/* Optional: make it feel disabled when no file */
-.svc-file-name:empty {
-  display: none;
-}
-
-/* ───────────────── Hint ───────────────── */
-
-.svc-field-hint {
-  margin-top: 3px;
+/* Delete Button */
+.attachment-delete-btn {
+  border: none;
+  background: #ffebee;
+  color: #c62828;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
   font-size: 10px;
-  color: #888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: #c62828;
+    color: #fff;
+  }
 }
 
+/* New Files */
+.new-files-text {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #555;
+}
 /* ───────────────── Agreement ───────────────── */
 
 .svc-agreement {

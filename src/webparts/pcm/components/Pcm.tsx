@@ -33,13 +33,16 @@ const Home: React.FC<IPcmProps> = (props: IPcmProps) => {
             <div className="pcm-tile">TRC</div>
             <div className="pcm-tile">IBR</div>
             {/* ROUTING TILE */}
-            <div
-              className="pcm-tile"
-              onClick={() => history.push("/bjfcl")}
-              style={{ cursor: "pointer" }}
-            >
-              BJFCL
-            </div>
+           <div
+  className="pcm-tile"
+  onClick={() => {
+    const currentUrl = window.location.href.split("#")[0]; 
+    window.open(`${currentUrl}#/bjfcl`, "_blank", "noopener,noreferrer");
+  }}
+  style={{ cursor: "pointer" }}
+>
+  BJFCL
+</div>
             <div className="pcm-tile">BC Excel</div>
           </div>
         </div>

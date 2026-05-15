@@ -41,6 +41,8 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
 
   const [contractorAgencies, setContractorAgencies] = useState<any[]>([]);
   const [transporterAgencies, setTransporterAgencies] = useState<any[]>([]);
+  const [previewReqNo, setPreviewReqNo] = useState("");
+  const [currentDate, setCurrentDate] = useState("");
 
   const [formData, setFormData] = useState({
     typeOfViolation: "",
@@ -352,7 +354,9 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
 
     if (!confirm.isConfirmed) return;
 
-    if (!validateForm()) return;
+    const isValid = await validateForm();
+
+    if (!isValid) return;
 
     await saveData("Submitted");
   };
@@ -545,13 +549,39 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
     void loadLoggedInEmployee();
     void loadContractorAgencies();
     void loadTransporterAgencies();
+
+    // Current Date
+    const today = new Date();
+
+    const formattedDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+
+    setCurrentDate(formattedDate);
+
+    // Preview Req No
+    const loadPreviewReqNo = async () => {
+      const reqNo = await generateRequestNumber();
+
+      setPreviewReqNo(reqNo);
+    };
+
+    void loadPreviewReqNo();
   }, []);
 
   return (
     <div className="svc-container">
       {/* Header */}
       <div className="svc-header">
-        <h4 className="svc-title">Safety Violation Card</h4>
+        <div className="svc-header-left">
+          <strong>Date:</strong> {currentDate}
+        </div>
+
+        <div className="svc-header-center">
+          <h4 className="svc-title">Safety Violation Card</h4>
+        </div>
+
+        <div className="svc-header-right">
+          <strong>Sr No:</strong> {previewReqNo}
+        </div>
       </div>
 
       {/* SECTION 1 */}
@@ -787,8 +817,7 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
                 onChange={(items: any[]) => {
                   setFormData((prev: any) => ({
                     ...prev,
-                    violatorName:
-                      items.length > 0 ? items[0].text : "",
+                    violatorName: items.length > 0 ? items[0].text : "",
                   }));
                 }}
               />
@@ -829,9 +858,8 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
           </>
         )}
 
-        {/* Contractor & Transporter */}
-        {(formData.employmentType === "Contractor" ||
-          formData.employmentType === "Transporter") && (
+        {/* Contractor Only */}
+        {formData.employmentType === "Contractor" && (
           <>
             <div className="svc-row svc-cols-1">
               <div className="svc-field">
@@ -973,7 +1001,7 @@ const SafetyViolationDetails: React.FC<IPcmProps> = (props) => {
         </button>
 
         <button
-          className="btn-secondary"
+          className="btn-primary"
           type="button"
           disabled={submitting || !formData.agreed}
           onClick={handleSaveDraft}

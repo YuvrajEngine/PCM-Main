@@ -8,40 +8,31 @@ import {
   PrincipalType,
 } from "@pnp/spfx-controls-react/lib/PeoplePicker";
 import Swal from "sweetalert2";
-
 import SafetyViolationEventMasterOps from "../../services/BAL/SafetyViolationEventMaster";
 import SeverityMatrixOps from "../../services/BAL/SeverityMatrixMaster";
 import ContractorAgencyMasterOps from "../../services/BAL/ContractorAgencyMaster";
 import TransporterAgencyMasterOps from "../../services/BAL/TransporterAgencyMaster";
-
 import SPCRUDOPS from "../../services/DAL/spcrudops";
-
 import { IPcmProps } from "../IPcmProps";
 
 const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
   const history = useHistory();
-
   const eventMasterOps = SafetyViolationEventMasterOps();
   const severityMatrixOps = SeverityMatrixOps();
   const contractorAgencyOps = ContractorAgencyMasterOps();
   const transporterAgencyOps = TransporterAgencyMasterOps();
-
   const [submitting, setSubmitting] = useState(false);
-
   const [attachments, setAttachments] = useState<FileList | null>(null);
-
   const [eventTypes, setEventTypes] = useState<any[]>([]);
   const [severityList, setSeverityList] = useState<any[]>([]);
-
   const [contractorAgencies, setContractorAgencies] = useState<any[]>([]);
   const [transporterAgencies, setTransporterAgencies] = useState<any[]>([]);
-
+  const [existingAttachments, setExistingAttachments] = useState<any[]>([]);
+  const [requestNo, setRequestNo] = useState("");
+  const [currentDate, setCurrentDate] = useState("");
   const [itemId, setItemId] = useState<number>(0);
-
   const [requestStatus, setRequestStatus] = useState<string>("Draft");
-
   const isEditable = requestStatus === "Draft";
-
   const [formData, setFormData] = useState({
     typeOfViolation: "",
     severity: "",
@@ -73,13 +64,9 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
     try {
       const hash = window.location.hash;
       const queryString = hash.split("?")[1];
-
       const queryParams = new URLSearchParams(queryString);
-
       const reqNo = queryParams.get("ReqID");
-
       const spCrud = await SPCRUDOPS();
-
       const data = await spCrud.getData(
         "SafetyViolationDetails",
         "*,EventType/Id,EventType/Title",
@@ -99,8 +86,31 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
 
       const item = data[0];
 
+      // Existing Req No
+      setRequestNo(item.SafetyViolationCardNumber || item.Title || "");
+
+      // Existing Observation Date
+      const observationDate = item.ObservationDate
+        ? new Date(item.ObservationDate)
+        : new Date();
+
+      const formattedDate = `${observationDate.getDate()}/${observationDate.getMonth() + 1}/${observationDate.getFullYear()}`;
+
+      setCurrentDate(formattedDate);
+
       setItemId(item.Id);
 
+      setRequestStatus(item.Status || "Draft");
+
+      // Load Existing Attachments
+      const files = await spCrud.getAttachments(
+        "SafetyViolationDetails",
+        item.Id,
+        props,
+      );
+
+      setExistingAttachments(files || []);
+      setItemId(item.Id);
       setRequestStatus(item.Status || "Draft");
 
       setFormData({
@@ -271,6 +281,42 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
     }
   };
 
+  const handleDeleteAttachment = async (fileName: string) => {
+    try {
+      const confirm = await Swal.fire({
+        title: "Delete Attachment?",
+        text: `Are you sure you want to delete ${fileName}?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, Delete",
+        cancelButtonText: "Cancel",
+        confirmButtonColor: "#d33",
+      });
+
+      if (!confirm.isConfirmed) return;
+
+      const spCrud = await SPCRUDOPS();
+
+      await spCrud.deleteAttachment(
+        "SafetyViolationDetails",
+        itemId,
+        fileName,
+        props,
+      );
+
+      // Remove from UI
+      setExistingAttachments((prev) =>
+        prev.filter((file) => file.name !== fileName),
+      );
+
+      await Swal.fire("Deleted", "Attachment deleted successfully", "success");
+    } catch (error) {
+      console.log(error);
+
+      await Swal.fire("Error", "Unable to delete attachment", "error");
+    }
+  };
+
   const updateData = async (status: string) => {
     try {
       setSubmitting(true);
@@ -359,8 +405,17 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
     <div className="svc-container">
       {/* SECTION 1 */}
       <div className="svc-header">
-        {" "}
-        <h4 className="svc-title">Edit Safety Violation Card</h4>{" "}
+        <div className="svc-header-left">
+          <strong>Date:</strong> {currentDate}
+        </div>
+
+        <div className="svc-header-center">
+          <h4 className="svc-title">Edit Safety Violation Card</h4>
+        </div>
+
+        <div className="svc-header-right">
+          <strong>Sr No:</strong> {requestNo}
+        </div>
       </div>
       <div className="svc-section">
         <h5 className="svc-section-title">1. Violation Details:</h5>
@@ -452,7 +507,7 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
                   {item.Title}
                 </option>
               ))}
-            </select>
+            </select> 
           </div>
         </div>
 
@@ -546,11 +601,48 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
                 Choose Files
               </label>
 
-              <span className="svc-file-name">
-                {attachments && attachments.length > 0
-                  ? `${attachments.length} file(s) selected`
-                  : "No file chosen"}
-              </span>
+              <div className="svc-file-name">
+                {/* Existing Files */}
+                {existingAttachments.length > 0 && (
+                  <div className="existing-files">
+                    {existingAttachments.map((file: any, index: number) => (
+                      <div key={index} className="attachment-row">
+                        <a
+                          href={file.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="attachment-link"
+                        >
+                          {file.name}
+                        </a>
+
+                        {/* Delete Option */}
+                        {isEditable && (
+                          <button
+                            type="button"
+                            className="attachment-delete-btn"
+                            onClick={() => handleDeleteAttachment(file.name)}
+                          >
+                            ❌
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* New Files */}
+                {attachments && attachments.length > 0 && (
+                  <div className="new-files-text">
+                    {attachments.length} new file(s) selected
+                  </div>
+                )}
+
+                {/* Empty */}
+                {existingAttachments.length === 0 &&
+                  (!attachments || attachments.length === 0) &&
+                  "No file chosen"}
+              </div>
 
               <input
                 id="attachmentInput"
