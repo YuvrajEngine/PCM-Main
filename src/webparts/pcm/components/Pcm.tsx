@@ -53,21 +53,6 @@ const Home: React.FC<IPcmProps> = (props: IPcmProps) => {
   );
 };
 
-/* ================= MAIN COMPONENT ================= */
-// export const Pcm: React.FC<IPcmProps>  = (props: IPcmProps) => {
-//     return (
-//       <Router>
-//         <Switch>
-//           {/* HOME */}
-//           <Route exact path="/" component={Home} {...props}/>
-//           {/* BJFCL */}
-//           <Route exact path="/bjfcl" component={Bjfcl} {...props}/>
-//           {/* ADD PAGE */}
-//           <Route path="/bjfcl/add" component={SafetyViolationDetails} {...props}/>
-//         </Switch>
-//       </Router>
-//     );
-// }
 export default class Pcm extends React.Component<IPcmProps> {
   public render(): React.ReactElement<IPcmProps> {
     const {

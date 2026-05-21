@@ -317,6 +317,220 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
     }
   };
 
+  // ===============================
+  // Validation
+  // ===============================
+  const validateForm = async () => {
+    if (!formData.typeOfViolation) {
+      await Swal.fire(
+        "Validation",
+        "Please select Type Of Violation",
+        "warning",
+      );
+
+      return false;
+    }
+
+    if (!formData.severity) {
+      await Swal.fire("Validation", "Please select Severity", "warning");
+
+      return false;
+    }
+
+    if (!formData.violationWithRespectTo) {
+      await Swal.fire(
+        "Validation",
+        "Please select Violation With Respect To",
+        "warning",
+      );
+
+      return false;
+    }
+
+    if (!formData.eventType) {
+      await Swal.fire("Validation", "Please select Event Type", "warning");
+
+      return false;
+    }
+
+    if (!formData.observationDate) {
+      await Swal.fire(
+        "Validation",
+        "Please select Observation Date",
+        "warning",
+      );
+
+      return false;
+    }
+
+    if (!formData.violationDetails.trim()) {
+      await Swal.fire(
+        "Validation",
+        "Please enter Violation Details",
+        "warning",
+      );
+
+      return false;
+    }
+
+    // Observer Details
+    if (!formData.observerName.trim()) {
+      await Swal.fire("Validation", "Please enter Observer Name", "warning");
+
+      return false;
+    }
+
+    if (!formData.observerDepartment.trim()) {
+      await Swal.fire(
+        "Validation",
+        "Please enter Observer Department",
+        "warning",
+      );
+
+      return false;
+    }
+
+    if (!formData.observerPosition.trim()) {
+      await Swal.fire(
+        "Validation",
+        "Please enter Observer Position",
+        "warning",
+      );
+
+      return false;
+    }
+
+    // Employment Type
+    if (!formData.employmentType) {
+      await Swal.fire("Validation", "Please select Employment Type", "warning");
+
+      return false;
+    }
+
+    // Employee
+    if (formData.employmentType === "Employee") {
+      if (!formData.violatorName.trim()) {
+        await Swal.fire(
+          "Validation",
+          "Please select Name of Violator",
+          "warning",
+        );
+
+        return false;
+      }
+
+      if (!formData.violatorDepartment.trim()) {
+        await Swal.fire(
+          "Validation",
+          "Please enter Violator Department",
+          "warning",
+        );
+
+        return false;
+      }
+
+      if (!formData.empNo.trim()) {
+        await Swal.fire(
+          "Validation",
+          "Please enter Employee No / Gate Pass No",
+          "warning",
+        );
+
+        return false;
+      }
+
+      if (!formData.violatorPosition.trim()) {
+        await Swal.fire(
+          "Validation",
+          "Please enter Violator Position",
+          "warning",
+        );
+
+        return false;
+      }
+    }
+
+    // Contractor
+    if (formData.employmentType === "Contractor") {
+      if (!formData.violatorName.trim()) {
+        await Swal.fire(
+          "Validation",
+          "Please enter Name of Violator",
+          "warning",
+        );
+
+        return false;
+      }
+
+      if (!formData.contractorAgency) {
+        await Swal.fire(
+          "Validation",
+          "Please select Contractor Agency",
+          "warning",
+        );
+
+        return false;
+      }
+
+      if (!formData.violatorDepartment.trim()) {
+        await Swal.fire(
+          "Validation",
+          "Please enter Violator Department",
+          "warning",
+        );
+
+        return false;
+      }
+
+      if (!formData.empNo.trim()) {
+        await Swal.fire("Validation", "Please enter Gate Pass No", "warning");
+
+        return false;
+      }
+
+      if (!formData.violatorPosition.trim()) {
+        await Swal.fire(
+          "Validation",
+          "Please enter Position / Trade",
+          "warning",
+        );
+
+        return false;
+      }
+    }
+
+    // Transporter
+    if (formData.employmentType === "Transporter") {
+      if (!formData.violatorName.trim()) {
+        await Swal.fire(
+          "Validation",
+          "Please enter Name of Violator",
+          "warning",
+        );
+
+        return false;
+      }
+
+      if (!formData.transporterAgency) {
+        await Swal.fire(
+          "Validation",
+          "Please select Transporter Agency",
+          "warning",
+        );
+
+        return false;
+      }
+    }
+
+    if (!formData.agreed) {
+      await Swal.fire("Validation", "Please accept declaration", "warning");
+
+      return false;
+    }
+
+    return true;
+  };
+
   const updateData = async (status: string) => {
     try {
       setSubmitting(true);
@@ -507,7 +721,7 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
                   {item.Title}
                 </option>
               ))}
-            </select> 
+            </select>
           </div>
         </div>
 
@@ -967,10 +1181,28 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
         </button>
 
         <button
-          className="btn-secondary"
+          className="btn-primary"
           type="button"
           disabled={submitting || !formData.agreed || !isEditable}
-          onClick={() => updateData("Draft")}
+          onClick={async () => {
+            const confirm = await Swal.fire({
+              title: "Save Draft?",
+              text: "Do you want to save this form as draft?",
+              icon: "question",
+              showCancelButton: true,
+              confirmButtonText: "Yes, Save",
+              cancelButtonText: "Cancel",
+              confirmButtonColor: "#f39c12",
+            });
+
+            if (!confirm.isConfirmed) return;
+
+            const isValid = await validateForm();
+
+            if (!isValid) return;
+
+            await updateData("Draft");
+          }}
         >
           {submitting ? "Saving..." : "Save Draft"}
         </button>
@@ -979,7 +1211,25 @@ const SafetyViolationRequestEdit: React.FC<IPcmProps> = (props) => {
           className="btn-primary"
           type="button"
           disabled={submitting || !formData.agreed || !isEditable}
-          onClick={() => updateData("Submitted")}
+          onClick={async () => {
+            const confirm = await Swal.fire({
+              title: "Submit Request?",
+              text: "Are you sure you want to submit this request?",
+              icon: "question",
+              showCancelButton: true,
+              confirmButtonText: "Yes, Submit",
+              cancelButtonText: "Cancel",
+              confirmButtonColor: "#28a745",
+            });
+
+            if (!confirm.isConfirmed) return;
+
+            const isValid = await validateForm();
+
+            if (!isValid) return;
+
+            await updateData("Submitted");
+          }}
         >
           {submitting ? "Submitting..." : "Submit"}
         </button>

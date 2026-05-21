@@ -1,73 +1,141 @@
 
 @import '~@fluentui/react/dist/sass/References.scss';
 
-/* Hide SharePoint Default Elements */
+/* =========================================================
+   SHAREPOINT MODERN PAGE FULL WIDTH FIX
+   WORKS AFTER DEPLOYMENT
+========================================================= */
+
+/* ===== Hide SharePoint Default UI ===== */
 
 #spCommandBar,
 #spSiteHeader,
 #spLeftNav,
-.CommandBarWrapper,
+#CommentsWrapper,
 .sp-appBar,
-#CommentsWrapper {
-  display: none !important;
+.CommandBarWrapper,
+.sp-pageChrome-appDiv,
+.od-TopBar,
+.sp-header,
+.sp-siteHeader,
+.sp-appBar-mobile,
+.ms-HubNav {
+    display: none !important;
 }
 
-.CanvasZone {
-  padding: 0 !important;
-}
+/* ===== Remove SharePoint Default Spacing ===== */
 
-.ControlZone {
-  margin-top: 0 !important;
-  padding: 0 !important;
-}
-
+html,
 body {
-  font-family: Arial, Helvetica, sans-serif !important;
-  margin: 0;
-  padding: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    font-family: Arial, Helvetica, sans-serif !important;
 }
 
-#workbenchPageContent {
-  max-width: 100% !important;
-}
+/* ===== Main SharePoint Containers ===== */
 
-#workbenchPageContent > div > div > div {
-  padding: 0 !important;
-}
-
-#CanvasZone-SectionContainer {
-  max-width: 100% !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-}
-
+#workbenchPageContent,
+#spPageCanvasContent,
 .CanvasComponent,
 .Canvas,
 .CanvasZone,
 .CanvasSection,
 .ControlZone,
+.CanvasZoneSectionContainer,
 .ms-SPLegacyFabricBlock,
-.pcm_ac6a344f,
 [data-automation-id="Canvas"],
 [data-automation-id="CanvasZone"],
 [data-automation-id="CanvasSection"],
-[data-automation-id="CanvasLayout"] {
-  width: 100% !important;
-  max-width: 100% !important;
+[data-automation-id="CanvasLayout"],
+[data-automation-id="CanvasControl"] {
+    width: 100% !important;
+    max-width: 100% !important;
 
-  margin-left: 0 !important;
-  margin-right: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
 
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-
-  box-sizing: border-box;
+    box-sizing: border-box !important;
 }
 
-/* Remove SharePoint inner spacing */
-.CanvasZoneSectionContainer {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
+/* ===== Remove Internal Left/Right Gaps ===== */
+
+#workbenchPageContent > div,
+#workbenchPageContent > div > div,
+#workbenchPageContent > div > div > div,
+.CanvasZone > div,
+.CanvasSection > div,
+.ControlZone > div {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+/* ===== SharePoint Modern Page Wrapper ===== */
+
+.spAppAndPropertyPanelContainer,
+.mainContent,
+.RootFlexContainer,
+.ContentContainer,
+.SPCanvas,
+.pageContent,
+.CanvasHost {
+    width: 100% !important;
+    max-width: 100% !important;
+
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* ===== Fix Bootstrap Containers ===== */
+
+.container,
+.container-fluid {
+    width: 100% !important;
+    max-width: 100% !important;
+
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* ===== Fix Fluent UI / Fabric UI ===== */
+
+.ms-Fabric,
+.ms-Stack,
+.ms-StackItem {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* ===== Remove Scroll Causing Elements ===== */
+
+div,
+section {
+    box-sizing: border-box !important;
+}
+
+/* ===== Fix Right Side White Space After Deployment ===== */
+
+.CanvasComponent.LCS,
+.CanvasComponent,
+.CanvasZone {
+    overflow: hidden !important;
+}
+
+/* ===== Optional: Center Nothing ===== */
+
+body,
+#spPageCanvasContent {
+    display: block !important;
 }
 
 /* Prevent horizontal scroll */
